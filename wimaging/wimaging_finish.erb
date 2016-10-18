@@ -12,7 +12,7 @@ params:
 - windowsLicenseKey: ABCDE-ABCDE-ABCDE-ABCDE-ABCDE # Valid Windows license key
 - windowsLicenseOwner: Company, INC # Legal owner of the Windows license key
 - localAdminAccountDisabled: false
-- ntpSever: time.windows.com,other.time.server
+- ntpServer: time.windows.com,other.time.server
 - domainAdminAccount: administrator@domain.com # use this account to join domain
 - domainAdminAccountPasswd: Password for the domain Admin account
 - computerOU: OU=Computers,CN=domain,CN=com # Place the computer account in specified Organizational Unit
@@ -57,9 +57,9 @@ params:
 
   echo Network test OK!
 
-  <% if @host.params['ntpSever'] -%>
+  <% if @host.params['ntpServer'] -%>
     echo setting time server
-    w32tm /config /manualpeerlist:<%= @host.params['ntpSever'] %> /syncfromflags:manual /update
+    w32tm /config /manualpeerlist:<%= @host.params['ntpServer'] %> /syncfromflags:manual /update
   <% end %>
 
   echo sync time
