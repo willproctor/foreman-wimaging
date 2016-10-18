@@ -11,6 +11,5 @@ oses:
 # Parameters are expected to be set in Foreman (globally or per group/host
 params:
 %>
-
-echo Trigger Boot Mode Change
-%WGET% --no-verbose <%= @host.params['vmware_trigger_url'] -%>/localboot?fqdn=<%= @host.params['foreman_interfaces'][0]['name'] -%> -O C:\vmware_trigger.txt
+@echo off
+echo Additional triggers could be added here
