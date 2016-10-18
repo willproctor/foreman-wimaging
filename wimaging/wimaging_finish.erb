@@ -107,7 +107,9 @@ params:
   REG ADD "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v Setup /t REG_SZ /d "cmd.exe /C C:\post_deployment.cmd" /f
   echo call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag >> C:\post_deployment.cmd
   echo wget.exe <%= foreman_url('built') %> >> C:\post_deployment.cmd
-  echo call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v >> C:\post_deployment.cmd
+  rem echo call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v >> C:\post_deployment.cmd
+  echo sc stop puppet >> C:\post_deployment.cmd
+  echo sc start puppet >> C:\post_deployment.cmd
   echo del C:\post_deployment.cmd >> C:\post_deployment.cmd
 <% if foreman_debug != true -%>
     echo Cleaning up extras
