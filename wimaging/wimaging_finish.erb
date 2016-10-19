@@ -15,6 +15,7 @@ params:
 - ntpServer: time.windows.com,other.time.server
 - domainAdminAccount: administrator@domain.com # use this account to join domain
 - domainAdminAccountPasswd: Password for the domain Admin account
+- domainShortName: WINS/NETBIOS Name of the Domain
 - computerOU: OU=Computers,CN=domain,CN=com # Place the computer account in specified Organizational Unit
 - computerDomain: domain.com # domain to join
 - foremanDebug: false
@@ -107,7 +108,7 @@ params:
     @echo.call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
     @echo.wget.exe <%= foreman_url('built') %> 
     @echo.wget.exe -O c:\psexec.exe __FOREMAN_URL__/PsExec.exe
-		@echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainAdminAccount'] -%>@<%= @host.domain -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v
+		@echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainShortName'] -%>\<%= @host.params['domainAdminAccount'] -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v
 		@echo.del c:\psexec.exe
 		@echo.del C:\post_deployment.cmd
   )
