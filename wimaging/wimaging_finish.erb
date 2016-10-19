@@ -95,8 +95,6 @@ params:
     echo set puppet to auto start
     sc config puppet start= auto
     sc query puppet
-    rem this is rather hacky
-    rem call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
   <% end -%>
 
   <% if snippets "Wimaging extraFinishCommands" -%>
@@ -105,12 +103,14 @@ params:
   <% end -%>
 
   REG ADD "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v Setup /t REG_SZ /d "cmd.exe /C C:\post_deployment.cmd" /f
-  echo call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag >> C:\post_deployment.cmd
-  echo wget.exe <%= foreman_url('built') %> >> C:\post_deployment.cmd
-  rem echo call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v >> C:\post_deployment.cmd
-  echo sc stop puppet >> C:\post_deployment.cmd
-  echo sc start puppet >> C:\post_deployment.cmd
-  echo del C:\post_deployment.cmd >> C:\post_deployment.cmd
+  > C:\post_deployment.cmd (
+    @echo.call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
+    @echo.wget.exe <%= foreman_url('built') %> 
+    @echo.wget.exe -O c:\psexec.exe __FOREMAN_URL__/PsExec.exe
+		@echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainAdminAccount'] -%>@<%= @host.domain -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v
+		@echo.del c:\psexec.exe
+		@echo.del C:\post_deployment.cmd
+  )
 <% if foreman_debug != true -%>
     echo Cleaning up extras
     sdelete.exe -accepteula -p 2 -r c:\extras
