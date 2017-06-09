@@ -72,8 +72,8 @@ params:
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <AutoLogon>
             <Password>
-              <Value><%= Base64.encode64(Encoding::Converter.new("UTF-8", "UTF-16LE",:undef => nil).convert(Base64.decode64(root_pass)+"AdministratorPassword")).delete!("\n").chomp %></Value> 
-              <PlainText>false</PlainText> 
+              <Value><%= Base64.decode64(root_pass) %></Value> 
+              <PlainText>true</PlainText> 
             </Password>
             <Username>Administrator</Username> 
             <Enabled>true</Enabled> 
@@ -81,8 +81,9 @@ params:
           </AutoLogon>
             <UserAccounts>
                 <AdministratorPassword>
-                    <PlainText>false</PlainText>
-                    <Value><%= Base64.encode64(Encoding::Converter.new("UTF-8", "UTF-16LE",:undef => nil).convert(Base64.decode64(root_pass)+"AdministratorPassword")).delete!("\n").chomp %></Value>
+                    <PlainText>true</PlainText>
+                    <Value><%= Base64.decode64(root_pass) %></Value>
+                    <!-- <Value><%= Base64.encode64(Encoding::Converter.new("UTF-8", "UTF-16LE",:undef => nil).convert(Base64.decode64(root_pass)+"AdministratorPassword")).delete!("\n").chomp %></Value> -->
                 </AdministratorPassword>
                 <% if snippet('Wimaging local users') -%>
                   <%= snippet('Wimaging local users') -%>
