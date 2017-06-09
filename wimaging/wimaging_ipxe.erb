@@ -1,0 +1,6 @@
+#!ipxe
+kernel boot/wimboot
+initrd <%= @host.operatingsystem.bootfile(@host.arch,:bcd) %> bcd
+initrd <%= @host.operatingsystem.bootfile(@host.arch,:bootsdi) %> boot.sdi
+initrd <%= @host.operatingsystem.bootfile(@host.arch,:bootwim) %><% if @host.params['per_host_boot_wim'] %>_<%= @host %><% end %> boot.wim
+boot

@@ -1,0 +1,7 @@
+menuentry "Windows Installation for <%= @host %>" {
+  linux /boot/wimboot
+  initrd \
+  newc:bcd:<%= @host.operatingsystem.bootfile(@host.arch,:bcd) %> \
+  newc:boot.sdi:<%= @host.operatingsystem.bootfile(@host.arch,:bootsdi) %> \
+  newc:boot.wim:<%= @host.operatingsystem.bootfile(@host.arch,:bootwim) %><% if @host.params['per_host_boot_wim'] %>_<%= @host %><% end %>
+}

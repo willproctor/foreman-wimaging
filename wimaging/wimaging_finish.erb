@@ -19,6 +19,7 @@ params:
 - computerOU: OU=Computers,CN=domain,CN=com # Place the computer account in specified Organizational Unit
 - computerDomain: domain.com # domain to join
 - foremanDebug: false
+- windowsThirdPartyURL: http://FOREMAN/pub/deploy/windows/third-party # URL where third party utilities are provided, defaults to 
 %>
 <%
   # safemode renderer does not support unary negation
@@ -27,6 +28,7 @@ params:
   salt_enabled = @host.params['salt_master'] ? true : false
   chef_enabled = @host.respond_to?(:chef_proxy) && @host.chef_proxy
   foreman_debug = @host.params['foremanDebug'] == 'true' ? true : false
+  third_party_url = @host.params['windowsThirdPartyURL'] ? @host.params['windowsThirdPartyURL']: "http://#{foreman_server_fqdn}/pub/deploy/windows/third-party"
 %>
 
 @echo off
@@ -105,13 +107,20 @@ params:
 
   REG ADD "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v Setup /t REG_SZ /d "cmd.exe /C C:\post_deployment.cmd" /f
   > C:\post_deployment.cmd (
-    @echo.call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
+  @echo.wget.exe -O c:\psexec.exe <%= third_party_url %>/PsExec.exe
+    @echo.rem call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
+    @echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainShortName'] -%>\<%= @host.params['domainAdminAccount'] -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
     @echo.wget.exe <%= foreman_url('built') %> 
-    @echo.wget.exe -O c:\psexec.exe __FOREMAN_URL__/PsExec.exe
 		@echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainShortName'] -%>\<%= @host.params['domainAdminAccount'] -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v
+<% if foreman_debug -%>
+    @echo.pause
+<% end -%>
+<% if foreman_debug != true -%>
 		@echo.del c:\psexec.exe
 		@echo.del C:\post_deployment.cmd
+<% end -%>  
   )
+
 <% if foreman_debug != true -%>
     echo Cleaning up extras
     sdelete.exe -accepteula -p 2 -r c:\extras
