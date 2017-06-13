@@ -110,7 +110,12 @@ params:
   @echo.wget.exe -O c:\psexec.exe <%= third_party_url %>/PsExec.exe
     @echo.rem call "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
     @echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainShortName'] -%>\<%= @host.params['domainAdminAccount'] -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v --tags no_such_tag
-    @echo.wget.exe <%= foreman_url('built') %> 
+    @echo.wget.exe --tries=2 --timeout=10 <%= foreman_url('built') %> 
+    @echo.ping 127.0.0.1
+    @echo.ipconfig /release
+    @echo.ping 127.0.0.1
+    @echo.ipconfig /renew
+    @echo.ping 127.0.0.1
 		@echo.c:\psexec.exe -accepteula -nobanner -u <%= @host.params['domainShortName'] -%>\<%= @host.params['domainAdminAccount'] -%> -p <%= @host.params['domainAdminAccountPassword'] -%> cmd /C "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" agent -t -v
 <% if foreman_debug -%>
     @echo.pause
